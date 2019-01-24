@@ -155,6 +155,9 @@ def main():
         display(man, game)
         game.get_input()
         man.guesses_left = game.guess_amount
+    game.displayed = game.solution
+    display(man, game)
+    print('\t\tGame Over!\n\t\tYou Lose!')
 
 
 main()
