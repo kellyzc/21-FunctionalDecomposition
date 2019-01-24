@@ -4,7 +4,7 @@ Hangman.
 Author: Zach Kelly.
 """  # Done: 1. PUT YOUR NAME IN THE ABOVE LINE.
 
-# TODO: 2. Implement Hangman using your Iterative Enhancement Plan.
+# Done: 2. Implement Hangman using your Iterative Enhancement Plan.
 import random
 
 
