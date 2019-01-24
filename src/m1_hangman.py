@@ -15,6 +15,7 @@ class WordDisplay(object):
         self.choose_word()
         self.hide_word()
         self.not_guessed = []
+        self.not_guessed_str = 'abcdefghijklmnopqrstuvwxyz'
         for i in range(97, 123):
             self.not_guessed.append(chr(i))
         self.guess_amount = 3
@@ -47,6 +48,10 @@ class WordDisplay(object):
             else:
                 print('Invalid guess, read the prompt and try again.')
         self.not_guessed.remove(guess)
+        letters = ''
+        for i in range(len(self.not_guessed)):
+            letters = letters + self.not_guessed[i]
+        self.not_guessed_str = letters
         self.show_letter(guess)
 
     def choose_word(self):
@@ -57,9 +62,10 @@ class WordDisplay(object):
         self.solution = word_list[index]
 
     def update_display(self):
-        for i in range(100):
-            print()
-        print(self.displayed)
+        print('Letters left:')
+        print('\t' + self.not_guessed_str)
+        print('Word:')
+        print('\t' + self.displayed)
 
 
 class Hangman(object):
@@ -83,6 +89,7 @@ class Hangman(object):
             if num_guesses.isdigit() and int(num_guesses) > 0:
                 break
             else:
+                clear()
                 print('Invalid number, read the prompt and try again.')
         self.max_guesses = num_guesses
         self.guesses_left = num_guesses
@@ -97,8 +104,6 @@ class Hangman(object):
             self.stage_order[self.current_stage]()
 
     def update_display(self):
-        for i in range(100):
-            print()
         for i in range(len(self.man)):
             print(self.man[i])
 
@@ -124,17 +129,23 @@ class Hangman(object):
         self.man[3] = '|     |'
 
 
+def clear():
+    for i in range(100):
+        print()
+
+
+def display(hangman, worddisplay):
+    clear()
+    hangman.update_display()
+    worddisplay.update_display()
+
+
 def main():
-    """game = WordDisplay()
-    for i in range(10):
-        game.update_display()
-        game.get_input()"""
+    clear()
+    game = WordDisplay()
     man = Hangman()
-    man.update_stage(2)
-    man.update_display()
-    input()
-    man.update_stage(3)
-    man.update_display()
+    man.set_difficulty()
+    display(man, game)
 
 
 main()
