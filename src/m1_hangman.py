@@ -90,8 +90,8 @@ class Hangman(object):
 
     def set_difficulty(self):
         while True:
-            num_guesses = input('Input positive integer number of guesses: ')
-            if num_guesses.isdigit() and int(num_guesses) > 0:
+            num_guesses = input('Input a number of guesses between 0 and 26: ')
+            if num_guesses.isdigit() and 0 < int(num_guesses) < 26:
                 break
             else:
                 clear()
@@ -100,7 +100,7 @@ class Hangman(object):
         self.guesses_left = int(num_guesses)
 
     def guesses_to_stage(self):
-        return round((self.max_guesses - self.guesses_left) / self.max_guesses * 7)
+        return round((self.max_guesses - self.guesses_left) / self.max_guesses * 7.0)
 
     def update_stage(self):
         next_stage = self.guesses_to_stage()
@@ -151,13 +151,17 @@ def main():
     man = Hangman()
     man.set_difficulty()
     game.guess_amount = man.guesses_left
-    while man.guesses_left > 0:
+    while man.guesses_left > 0 and game.displayed != game.solution:
         display(man, game)
         game.get_input()
         man.guesses_left = game.guess_amount
+        man.update_stage()
     game.displayed = game.solution
     display(man, game)
-    print('\t\tGame Over!\n\t\tYou Lose!')
+    if man.guesses_left == 0:
+        print('\t\tGame Over!\n\t\tYou Lose!')
+    else:
+        print('\t\tGame Over!\n\t\tYou Win!')
 
 
 main()
