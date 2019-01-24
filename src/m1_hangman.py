@@ -18,7 +18,10 @@ class WordDisplay(object):
         self.not_guessed_str = 'abcdefghijklmnopqrstuvwxyz'
         for i in range(97, 123):
             self.not_guessed.append(chr(i))
-        self.guess_amount = 3
+        self.guess_amount = 1
+        self.last_guess = 0
+        self.status = {0: '', 1: 'Sorry, none of those!\n', 2: 'You\'ve already guessed that letter!\n',
+                       3: 'Invalid guess, read the prompt and try again.\n'}
 
     def hide_word(self):
         self.displayed = len(self.solution) * '*'
@@ -33,26 +36,27 @@ class WordDisplay(object):
             else:
                 new = new + self.displayed[i]
         self.displayed = new
+        self.last_guess = 0
         if letter_present == 0:
             self.guess_amount = self.guess_amount - 1
+            self.last_guess = 1
 
     def get_input(self):
-        while True:
-            guess = input('Input a single character guess: ')
-            guess.lower()
-            if guess.isalpha() and len(guess) == 1:
-                if self.not_guessed.count(guess) == 0:
-                    print('You\'ve already guessed that letter!')
-                else:
-                    break
+        print(self.status[self.last_guess], end='')
+        guess = input('Input a single character guess: ')
+        guess.lower()
+        if guess.isalpha() and len(guess) == 1:
+            if self.not_guessed.count(guess) == 0:
+                self.last_guess = 2
             else:
-                print('Invalid guess, read the prompt and try again.')
-        self.not_guessed.remove(guess)
-        letters = ''
-        for i in range(len(self.not_guessed)):
-            letters = letters + self.not_guessed[i]
-        self.not_guessed_str = letters
-        self.show_letter(guess)
+                self.not_guessed.remove(guess)
+                letters = ''
+                for i in range(len(self.not_guessed)):
+                    letters = letters + self.not_guessed[i]
+                self.not_guessed_str = letters
+                self.show_letter(guess)
+        else:
+            self.last_guess = 3
 
     def choose_word(self):
         with open('words.txt') as words:
@@ -62,6 +66,7 @@ class WordDisplay(object):
         self.solution = word_list[index]
 
     def update_display(self):
+        print('Guesses left: ' + '\n\t' + str(self.guess_amount))
         print('Letters left:')
         print('\t' + self.not_guessed_str)
         print('Word:')
@@ -81,7 +86,7 @@ class Hangman(object):
         self.stage_order = {1: self.add_head, 2: self.add_body_upper, 3: self.add_left_arm, 4: self.add_right_arm,
                             5: self.add_body_lower, 6: self.add_left_leg, 7: self.add_right_leg}
         self.max_guesses = 1
-        self.guesses_left = 0
+        self.guesses_left = 1
 
     def set_difficulty(self):
         while True:
@@ -91,8 +96,8 @@ class Hangman(object):
             else:
                 clear()
                 print('Invalid number, read the prompt and try again.')
-        self.max_guesses = num_guesses
-        self.guesses_left = num_guesses
+        self.max_guesses = int(num_guesses)
+        self.guesses_left = int(num_guesses)
 
     def guesses_to_stage(self):
         return round((self.max_guesses - self.guesses_left) / self.max_guesses * 7)
@@ -145,7 +150,11 @@ def main():
     game = WordDisplay()
     man = Hangman()
     man.set_difficulty()
-    display(man, game)
+    game.guess_amount = man.guesses_left
+    while man.guesses_left > 0:
+        display(man, game)
+        game.get_input()
+        man.guesses_left = game.guess_amount
 
 
 main()
