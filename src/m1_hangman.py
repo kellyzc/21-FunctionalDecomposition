@@ -65,34 +65,63 @@ class WordDisplay(object):
 class Hangman(object):
     def __init__(self):
         self.man = ['_______',
-                    '|     O',
-                    '|    /|\\',
-                    '|     |',
-                    '|    / \\',
+                    '|',
+                    '|',
+                    '|',
+                    '|',
                     '|_______',
                     '|_______|']
+        self.current_stage = 0
+        self.stage_order = {1: self.add_head, 2: self.add_body_upper, 3: self.add_left_arm, 4: self.add_right_arm,
+                            5: self.add_body_lower, 6: self.add_left_leg, 7: self.add_right_leg}
+        self.max_guesses = 1
+        self.guesses_left = 0
+
+    def set_difficulty(self):
+        while True:
+            num_guesses = input('Input positive integer number of guesses: ')
+            if num_guesses.isdigit() and int(num_guesses) > 0:
+                break
+            else:
+                print('Invalid number, read the prompt and try again.')
+        self.max_guesses = num_guesses
+        self.guesses_left = num_guesses
+
+    def guesses_to_stage(self):
+        return round((self.max_guesses - self.guesses_left) / self.max_guesses * 7)
+
+    def update_stage(self):
+        next_stage = self.guesses_to_stage()
+        while self.current_stage < next_stage:
+            self.current_stage = self.current_stage + 1
+            self.stage_order[self.current_stage]()
 
     def update_display(self):
+        for i in range(100):
+            print()
         for i in range(len(self.man)):
             print(self.man[i])
 
-    def remove_left_arm(self):
-        self.man[2] = '|     |\\'
+    def add_head(self):
+        self.man[1] = '|     O'
 
-    def remove_right_arm(self):
+    def add_left_arm(self):
+        self.man[2] = '|    /|'
+
+    def add_right_arm(self):
+        self.man[2] = '|    /|\\'
+
+    def add_right_leg(self):
+        self.man[4] = '|    / \\'
+
+    def add_left_leg(self):
+        self.man[4] = '|    /'
+
+    def add_body_upper(self):
         self.man[2] = '|     |'
 
-    def remove_left_leg(self):
-        self.man[4] = '|      \\'
-
-    def remove_left_leg(self):
-        self.man[4] = '|'
-
-    def remove_body_lower(self):
-        self.man[3] = '|'
-
-    def remove_body_lower(self):
-        self.man[2] = '|'
+    def add_body_lower(self):
+        self.man[3] = '|     |'
 
 
 def main():
@@ -101,6 +130,10 @@ def main():
         game.update_display()
         game.get_input()"""
     man = Hangman()
+    man.update_stage(2)
+    man.update_display()
+    input()
+    man.update_stage(3)
     man.update_display()
 
 
